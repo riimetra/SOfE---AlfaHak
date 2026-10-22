@@ -1,0 +1,22 @@
+{
+  "7701000001": {
+    "bki": {"closed_loans_count": 4, "active_loans_count": 1, "current_debt": 1500000, "overdue_days_max": 0},
+    "egrul": {"status": "ACTIVE", "registration_date": "2018-03-12", "age_months": 103, "director": "Иванов И. И."},
+    "fns": {"tax_debt": 0, "employees": 25, "okved_main": "47.11", "mass_address": false}
+  },
+  "7701000002": {
+    "bki": {"closed_loans_count": 2, "active_loans_count": 3, "current_debt": 3200000, "overdue_days_max": 65},
+    "egrul": {"status": "ACTIVE", "registration_date": "2020-06-01", "age_months": 76, "director": "Сидоров С. С."},
+    "fns": {"tax_debt": 120000, "employees": 8, "okved_main": "56.10", "mass_address": false}
+  },
+  "770100000003": {
+    "bki": {"closed_loans_count": 0, "active_loans_count": 0, "current_debt": 0, "overdue_days_max": 0},
+    "egrul": {"status": "ACTIVE", "registration_date": "2026-07-01", "age_months": 3, "director": "Петров П. П."},
+    "fns": {"tax_debt": 0, "employees": 1, "okved_main": "62.01", "mass_address": false}
+  },
+  "7701000004": {
+    "bki": {"closed_loans_count": 1, "active_loans_count": 0, "current_debt": 0, "overdue_days_max": 0},
+    "egrul": {"status": "LIQUIDATED", "registration_date": "2015-01-20", "age_months": 141, "director": "Козлов К. К."},
+    "fns": {"tax_debt": 0, "employees": 0, "okved_main": "41.20", "mass_address": true}
+  }
+}

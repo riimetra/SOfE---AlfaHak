@@ -1,0 +1,35 @@
+[
+  {
+    "code": "EXPRESS",
+    "name": "Экспресс-кредит",
+    "description": "Небольшая сумма на текущие задачи без залога, решение за минуты",
+    "min_amount": 100000,
+    "max_amount": 5000000,
+    "min_term_months": 3,
+    "max_term_months": 36,
+    "base_rate": 22.5,
+    "purposes": ["Пополнение оборотных средств", "Текущие расходы"]
+  },
+  {
+    "code": "INVEST",
+    "name": "Инвестиционный кредит",
+    "description": "Покупка оборудования, транспорта, запуск нового направления",
+    "min_amount": 1000000,
+    "max_amount": 50000000,
+    "min_term_months": 12,
+    "max_term_months": 84,
+    "base_rate": 19.0,
+    "purposes": ["Покупка оборудования", "Покупка транспорта", "Развитие бизнеса"]
+  },
+  {
+    "code": "OVERDRAFT",
+    "name": "Овердрафт",
+    "description": "Кредитный лимит на расчётном счёте для кассовых разрывов",
+    "min_amount": 50000,
+    "max_amount": 3000000,
+    "min_term_months": 1,
+    "max_term_months": 12,
+    "base_rate": 24.0,
+    "purposes": ["Покрытие кассовых разрывов"]
+  }
+]
