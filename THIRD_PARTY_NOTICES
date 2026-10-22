@@ -1,0 +1,45 @@
+THIRD-PARTY NOTICES
+===================
+
+Перечень сторонних компонентов, моделей, датасетов и сервисов, используемых в решении.
+Точные версии зафиксированы в backend/uv.lock, mocks/uv.lock, frontend/package.json.
+
+Backend / mocks (Python)
+------------------------
+- FastAPI            — MIT License          — https://github.com/fastapi/fastapi
+- Uvicorn            — BSD-3-Clause         — https://github.com/encode/uvicorn
+- Pydantic           — MIT License          — https://github.com/pydantic/pydantic
+- pydantic-settings  — MIT License          — https://github.com/pydantic/pydantic-settings
+- SQLAlchemy         — MIT License          — https://github.com/sqlalchemy/sqlalchemy
+- psycopg            — LGPL-3.0             — https://github.com/psycopg/psycopg
+- HTTPX              — BSD-3-Clause         — https://github.com/encode/httpx
+- pytest (dev)       — MIT License          — https://github.com/pytest-dev/pytest
+- Ruff (dev)         — MIT License          — https://github.com/astral-sh/ruff
+
+Frontend (JavaScript)
+---------------------
+- React, React DOM   — MIT License          — https://github.com/facebook/react
+- React Router       — MIT License          — https://github.com/remix-run/react-router
+- Vite               — MIT License          — https://github.com/vitejs/vite
+- TypeScript         — Apache-2.0           — https://github.com/microsoft/TypeScript
+
+Инфраструктура
+--------------
+- PostgreSQL 16      — PostgreSQL License   — https://www.postgresql.org
+- nginx              — BSD-2-Clause         — https://nginx.org
+- Python (образ)     — PSF License          — https://www.python.org
+- Node.js (образ)    — MIT License          — https://nodejs.org
+- uv                 — MIT / Apache-2.0     — https://github.com/astral-sh/uv
+
+Модели и датасеты
+-----------------
+- ML/LLM-модели не используются (при добавлении — только модели с открытыми весами).
+- Все данные о клиентах, компаниях и кредитных историях синтетические и созданы командой.
+
+Смоделированные интеграции
+--------------------------
+Реальные внешние сервисы не вызываются. Сервис mocks эмулирует упрощённые контракты:
+- Бюро кредитных историй (БКИ)                  — GET /bki/reports/{inn}
+- ЕГРЮЛ / ЕГРИП                                 — GET /egrul/companies/{inn}
+- ФНС «Прозрачный бизнес»                       — GET /fns/transparent-business/{inn}
+- Подписание документов (ПЭП) и выдача средств  — симуляция в backend

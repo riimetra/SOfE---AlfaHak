@@ -1,0 +1,1048 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Умный кредитный кабинет — API",
+    "description": "Цифровой кредитный конвейер для малого и микробизнеса",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/api/v1/products": {
+      "get": {
+        "tags": [
+          "catalog"
+        ],
+        "summary": "List Products",
+        "operationId": "list_products_api_v1_products_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ProductOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Products Api V1 Products Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/companies": {
+      "get": {
+        "tags": [
+          "companies"
+        ],
+        "summary": "List Companies",
+        "description": "Демо-список компаний (вместо авторизации — выбор тестового клиента).",
+        "operationId": "list_companies_api_v1_companies_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CompanyOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Companies Api V1 Companies Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/companies/{company_id}": {
+      "get": {
+        "tags": [
+          "companies"
+        ],
+        "summary": "Get Company",
+        "operationId": "get_company_api_v1_companies__company_id__get",
+        "parameters": [
+          {
+            "name": "company_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Company Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompanyOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/applications": {
+      "get": {
+        "tags": [
+          "applications"
+        ],
+        "summary": "List Applications",
+        "operationId": "list_applications_api_v1_applications_get",
+        "parameters": [
+          {
+            "name": "company_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Company Id"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/ApplicationStatus"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApplicationOut"
+                  },
+                  "title": "Response List Applications Api V1 Applications Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "applications"
+        ],
+        "summary": "Create Application",
+        "operationId": "create_application_api_v1_applications_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplicationCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/applications/{app_id}": {
+      "get": {
+        "tags": [
+          "applications"
+        ],
+        "summary": "Get Application",
+        "operationId": "get_application_api_v1_applications__app_id__get",
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "applications"
+        ],
+        "summary": "Update Application",
+        "operationId": "update_application_api_v1_applications__app_id__patch",
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplicationUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/applications/{app_id}/submit": {
+      "post": {
+        "tags": [
+          "applications"
+        ],
+        "summary": "Submit Application",
+        "description": "Отправка заявки (из DRAFT) или повторная отправка после уточнений (из INFO_REQUESTED).",
+        "operationId": "submit_application_api_v1_applications__app_id__submit_post",
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/applications/{app_id}/accept": {
+      "post": {
+        "tags": [
+          "applications"
+        ],
+        "summary": "Accept Offer",
+        "operationId": "accept_offer_api_v1_applications__app_id__accept_post",
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/applications/{app_id}/sign": {
+      "post": {
+        "tags": [
+          "applications"
+        ],
+        "summary": "Sign Documents",
+        "description": "Симуляция подписания документов и выдачи средств.",
+        "operationId": "sign_documents_api_v1_applications__app_id__sign_post",
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/applications/{app_id}/cancel": {
+      "post": {
+        "tags": [
+          "applications"
+        ],
+        "summary": "Cancel Application",
+        "operationId": "cancel_application_api_v1_applications__app_id__cancel_post",
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/applications/{app_id}/underwriter-decision": {
+      "post": {
+        "tags": [
+          "applications",
+          "bank"
+        ],
+        "summary": "Underwriter Decision",
+        "description": "Решение андеррайтера по заявке в статусе UNDERWRITING.",
+        "operationId": "underwriter_decision_api_v1_applications__app_id__underwriter_decision_post",
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UnderwriterDecision"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": [
+          "system"
+        ],
+        "summary": "Health",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ApplicationCreate": {
+        "properties": {
+          "company_id": {
+            "type": "string",
+            "title": "Company Id"
+          },
+          "product_code": {
+            "type": "string",
+            "title": "Product Code"
+          },
+          "amount": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Amount"
+          },
+          "term_months": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Term Months"
+          },
+          "purpose": {
+            "type": "string",
+            "title": "Purpose"
+          }
+        },
+        "type": "object",
+        "required": [
+          "company_id",
+          "product_code",
+          "amount",
+          "term_months",
+          "purpose"
+        ],
+        "title": "ApplicationCreate"
+      },
+      "ApplicationDetail": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "company_id": {
+            "type": "string",
+            "title": "Company Id"
+          },
+          "product_code": {
+            "type": "string",
+            "title": "Product Code"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ApplicationStatus"
+          },
+          "amount": {
+            "type": "string",
+            "title": "Amount"
+          },
+          "term_months": {
+            "type": "integer",
+            "title": "Term Months"
+          },
+          "purpose": {
+            "type": "string",
+            "title": "Purpose"
+          },
+          "score": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score"
+          },
+          "decision": {
+            "anyOf": [
+              {
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decision"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "enrichment": {
+            "type": "object",
+            "title": "Enrichment"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/EventOut"
+            },
+            "type": "array",
+            "title": "Events"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "company_id",
+          "product_code",
+          "status",
+          "amount",
+          "term_months",
+          "purpose",
+          "score",
+          "decision",
+          "created_at",
+          "updated_at",
+          "enrichment",
+          "events"
+        ],
+        "title": "ApplicationDetail"
+      },
+      "ApplicationOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "company_id": {
+            "type": "string",
+            "title": "Company Id"
+          },
+          "product_code": {
+            "type": "string",
+            "title": "Product Code"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ApplicationStatus"
+          },
+          "amount": {
+            "type": "string",
+            "title": "Amount"
+          },
+          "term_months": {
+            "type": "integer",
+            "title": "Term Months"
+          },
+          "purpose": {
+            "type": "string",
+            "title": "Purpose"
+          },
+          "score": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score"
+          },
+          "decision": {
+            "anyOf": [
+              {
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decision"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "company_id",
+          "product_code",
+          "status",
+          "amount",
+          "term_months",
+          "purpose",
+          "score",
+          "decision",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "ApplicationOut"
+      },
+      "ApplicationStatus": {
+        "type": "string",
+        "enum": [
+          "DRAFT",
+          "SUBMITTED",
+          "VALIDATION",
+          "INFO_REQUESTED",
+          "ENRICHMENT",
+          "SCORING",
+          "UNDERWRITING",
+          "APPROVED",
+          "COUNTER_OFFER",
+          "REJECTED",
+          "SIGNING",
+          "ISSUED",
+          "CANCELLED"
+        ],
+        "title": "ApplicationStatus",
+        "description": "Статусы заявки. Диаграмма переходов — docs/state-diagram.md."
+      },
+      "ApplicationUpdate": {
+        "properties": {
+          "amount": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Amount"
+          },
+          "term_months": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Term Months"
+          },
+          "purpose": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Purpose"
+          }
+        },
+        "type": "object",
+        "title": "ApplicationUpdate"
+      },
+      "CompanyOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "inn": {
+            "type": "string",
+            "title": "Inn"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "legal_form": {
+            "type": "string",
+            "title": "Legal Form"
+          },
+          "okved": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Okved"
+          },
+          "annual_revenue": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Annual Revenue"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "inn",
+          "name",
+          "legal_form",
+          "okved",
+          "annual_revenue"
+        ],
+        "title": "CompanyOut"
+      },
+      "EventOut": {
+        "properties": {
+          "from_status": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ApplicationStatus"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "to_status": {
+            "$ref": "#/components/schemas/ApplicationStatus"
+          },
+          "actor": {
+            "type": "string",
+            "title": "Actor"
+          },
+          "comment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comment"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "from_status",
+          "to_status",
+          "actor",
+          "comment",
+          "created_at"
+        ],
+        "title": "EventOut"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "ProductOut": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "min_amount": {
+            "type": "string",
+            "title": "Min Amount"
+          },
+          "max_amount": {
+            "type": "string",
+            "title": "Max Amount"
+          },
+          "min_term_months": {
+            "type": "integer",
+            "title": "Min Term Months"
+          },
+          "max_term_months": {
+            "type": "integer",
+            "title": "Max Term Months"
+          },
+          "base_rate": {
+            "type": "string",
+            "title": "Base Rate"
+          },
+          "purposes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Purposes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "name",
+          "description",
+          "min_amount",
+          "max_amount",
+          "min_term_months",
+          "max_term_months",
+          "base_rate",
+          "purposes"
+        ],
+        "title": "ProductOut"
+      },
+      "UnderwriterDecision": {
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/ApplicationStatus"
+          },
+          "comment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comment"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "title": "UnderwriterDecision"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "info": {
+    "name": "Умный кредитный кабинет",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8000/api/v1" },
+    { "key": "companyId", "value": "c0000000-0000-0000-0000-000000000001" },
+    { "key": "appId", "value": "" }
+  ],
+  "item": [
+    { "name": "Список продуктов", "request": { "method": "GET", "url": "{{baseUrl}}/products" } },
+    { "name": "Список компаний", "request": { "method": "GET", "url": "{{baseUrl}}/companies" } },
+    {
+      "name": "Создать заявку",
+      "event": [{
+        "listen": "test",
+        "script": { "exec": ["pm.collectionVariables.set('appId', pm.response.json().id);"] }
+      }],
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/applications",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"company_id\": \"{{companyId}}\",\n  \"product_code\": \"EXPRESS\",\n  \"amount\": 2000000,\n  \"term_months\": 24,\n  \"purpose\": \"Пополнение оборотных средств\"\n}"
+        }
+      }
+    },
+    { "name": "Отправить заявку", "request": { "method": "POST", "url": "{{baseUrl}}/applications/{{appId}}/submit" } },
+    { "name": "Карточка заявки", "request": { "method": "GET", "url": "{{baseUrl}}/applications/{{appId}}" } },
+    { "name": "Принять предложение", "request": { "method": "POST", "url": "{{baseUrl}}/applications/{{appId}}/accept" } },
+    { "name": "Подписать документы", "request": { "method": "POST", "url": "{{baseUrl}}/applications/{{appId}}/sign" } },
+    { "name": "Отозвать заявку", "request": { "method": "POST", "url": "{{baseUrl}}/applications/{{appId}}/cancel" } },
+    {
+      "name": "Решение андеррайтера",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/applications/{{appId}}/underwriter-decision",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"status\": \"APPROVED\",\n  \"comment\": \"Залог подтверждён\"\n}" }
+      }
+    }
+  ]
+}
