@@ -72,8 +72,9 @@ class Application(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now, onupdate=_now)
 
     company: Mapped[Company] = relationship(back_populates="applications")
+    product: Mapped[Product] = relationship()
     events: Mapped[list["ApplicationEvent"]] = relationship(
-        back_populates="application", order_by="ApplicationEvent.created_at"
+        back_populates="application", order_by="ApplicationEvent.id"
     )
 
 
@@ -93,3 +94,19 @@ class ApplicationEvent(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
 
     application: Mapped[Application] = relationship(back_populates="events")
+
+
+class User(Base):
+    """Учётная запись: представитель клиента (role=client) или сотрудник банка (role=underwriter)."""
+
+    __tablename__ = "users"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    login: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    password_hash: Mapped[str] = mapped_column(String(128))
+    full_name: Mapped[str] = mapped_column(String(255))
+    position: Mapped[str | None] = mapped_column(String(128))
+    role: Mapped[str] = mapped_column(String(16))  # client / underwriter
+    company_id: Mapped[str | None] = mapped_column(ForeignKey("companies.id"))
+
+    company: Mapped[Company | None] = relationship()

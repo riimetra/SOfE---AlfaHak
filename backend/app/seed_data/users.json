@@ -1,0 +1,12 @@
+[
+  {"login": "romashka", "password": "demo", "role": "client", "full_name": "Иванов Иван Иванович",
+   "position": "Генеральный директор", "company_id": "c0000000-0000-0000-0000-000000000001"},
+  {"login": "vasilek", "password": "demo", "role": "client", "full_name": "Сидорова Светлана Сергеевна",
+   "position": "Главный бухгалтер", "company_id": "c0000000-0000-0000-0000-000000000002"},
+  {"login": "petrov", "password": "demo", "role": "client", "full_name": "Петров Пётр Петрович",
+   "position": "Индивидуальный предприниматель", "company_id": "c0000000-0000-0000-0000-000000000003"},
+  {"login": "lyutik", "password": "demo", "role": "client", "full_name": "Козлов Константин Константинович",
+   "position": "Собственник бизнеса", "company_id": "c0000000-0000-0000-0000-000000000004"},
+  {"login": "underwriter", "password": "demo", "role": "underwriter", "full_name": "Андеррайтер Анна",
+   "position": "Кредитный аналитик МСБ", "company_id": null}
+]

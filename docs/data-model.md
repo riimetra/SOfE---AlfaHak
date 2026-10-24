@@ -7,6 +7,7 @@ erDiagram
     COMPANIES ||--o{ APPLICATIONS : "подаёт"
     PRODUCTS ||--o{ APPLICATIONS : "по продукту"
     APPLICATIONS ||--o{ APPLICATION_EVENTS : "история"
+    COMPANIES ||--o{ USERS : "представители"
 
     COMPANIES {
         string id PK
@@ -38,9 +39,18 @@ erDiagram
         string purpose
         json enrichment "ответы БКИ, ЕГРЮЛ, ФНС"
         int score "0–1000"
-        json decision "amount, term, rate, reason, factors"
+        json decision "amount, term_months, rate, monthly_payment, reason, factors, decided_by"
         datetime created_at
         datetime updated_at
+    }
+    USERS {
+        string id PK
+        string login UK
+        string password_hash "PBKDF2-SHA256 + соль"
+        string full_name
+        string position
+        string role "client / underwriter"
+        string company_id FK "null для сотрудника банка"
     }
     APPLICATION_EVENTS {
         int id PK
@@ -57,4 +67,5 @@ erDiagram
 
 - `backend/app/seed_data/products.json` — каталог продуктов.
 - `backend/app/seed_data/companies.json` — 4 тестовых клиента под разные исходы.
+- `backend/app/seed_data/users.json` — тестовые учётные записи (пароль `demo`).
 - `mocks/app/data/registry.json` — ответы внешних систем по ИНН.

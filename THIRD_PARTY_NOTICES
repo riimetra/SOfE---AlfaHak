@@ -43,3 +43,5 @@ Frontend (JavaScript)
 - ЕГРЮЛ / ЕГРИП                                 — GET /egrul/companies/{inn}
 - ФНС «Прозрачный бизнес»                       — GET /fns/transparent-business/{inn}
 - Подписание документов (ПЭП) и выдача средств  — симуляция в backend
+- Аутентификация (IdP)                           — демо-реализация на стандартной библиотеке Python
+                                                  (HMAC-SHA256 токены, PBKDF2 пароли), без сторонних пакетов

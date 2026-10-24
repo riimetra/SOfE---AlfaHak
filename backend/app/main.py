@@ -14,7 +14,7 @@ logging.basicConfig(level=settings.log_level)
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    # TODO: заменить create_all на миграции Alembic
+    # MVP: схема создаётся при старте. Развитие — миграции Alembic (см. docs/architecture.md)
     Base.metadata.create_all(engine)
     with SessionLocal() as db:
         seed(db)
@@ -23,7 +23,7 @@ async def lifespan(_: FastAPI):
 
 app = FastAPI(
     title="Умный кредитный кабинет — API",
-    version="0.1.0",
+    version="1.0.0",
     description="Цифровой кредитный конвейер для малого и микробизнеса",
     lifespan=lifespan,
 )

@@ -16,9 +16,10 @@ stateDiagram-v2
     INFO_REQUESTED --> CANCELLED
 
     ENRICHMENT --> SCORING: БКИ + ЕГРЮЛ + ФНС получены
+    ENRICHMENT --> UNDERWRITING: внешний источник недоступен
     SCORING --> APPROVED: скор ≥ 600
     SCORING --> COUNTER_OFFER: 450 ≤ скор < 600
-    SCORING --> REJECTED: скор < 450 или стоп-фактор
+    SCORING --> REJECTED: скор < 450 или стоп-фактор (ЕГРЮЛ)
     SCORING --> UNDERWRITING: сумма ≥ 10 млн ₽
 
     UNDERWRITING --> APPROVED
@@ -43,7 +44,7 @@ stateDiagram-v2
 | DRAFT | клиент | Черновик, можно редактировать |
 | SUBMITTED / VALIDATION / ENRICHMENT / SCORING | система | «Заявка рассматривается», этап на таймлайне |
 | INFO_REQUESTED | клиент | Что именно нужно уточнить |
-| UNDERWRITING | андеррайтер | «Рассматривает специалист» |
+| UNDERWRITING | андеррайтер | «Рассматривает специалист», статус обновляется автоматически |
 | APPROVED / COUNTER_OFFER | клиент | Предложение: сумма, срок, ставка |
 | SIGNING | клиент | Документы на подпись |
 | ISSUED / REJECTED / CANCELLED | — | Итог |

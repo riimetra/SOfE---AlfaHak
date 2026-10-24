@@ -1,45 +1,500 @@
 {
   "info": {
     "name": "Умный кредитный кабинет",
+    "description": "Запускать сверху вниз: токены и id заявки сохраняются в переменные коллекции.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
-    { "key": "baseUrl", "value": "http://localhost:8000/api/v1" },
-    { "key": "companyId", "value": "c0000000-0000-0000-0000-000000000001" },
-    { "key": "appId", "value": "" }
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000/api/v1"
+    },
+    {
+      "key": "clientToken",
+      "value": ""
+    },
+    {
+      "key": "bankToken",
+      "value": ""
+    },
+    {
+      "key": "appId",
+      "value": ""
+    },
+    {
+      "key": "bigAppId",
+      "value": ""
+    }
   ],
   "item": [
-    { "name": "Список продуктов", "request": { "method": "GET", "url": "{{baseUrl}}/products" } },
-    { "name": "Список компаний", "request": { "method": "GET", "url": "{{baseUrl}}/companies" } },
     {
-      "name": "Создать заявку",
-      "event": [{
-        "listen": "test",
-        "script": { "exec": ["pm.collectionVariables.set('appId', pm.response.json().id);"] }
-      }],
-      "request": {
-        "method": "POST",
-        "url": "{{baseUrl}}/applications",
-        "header": [{ "key": "Content-Type", "value": "application/json" }],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"company_id\": \"{{companyId}}\",\n  \"product_code\": \"EXPRESS\",\n  \"amount\": 2000000,\n  \"term_months\": 24,\n  \"purpose\": \"Пополнение оборотных средств\"\n}"
+      "name": "Авторизация",
+      "item": [
+        {
+          "name": "Вход: romashka",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/login",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"login\": \"romashka\",\n  \"password\": \"demo\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.collectionVariables.set('clientToken', pm.response.json().access_token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Вход: underwriter",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/login",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"login\": \"underwriter\",\n  \"password\": \"demo\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.collectionVariables.set('bankToken', pm.response.json().access_token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Текущий пользователь",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/auth/me",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{clientToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Тестовые учётки",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/auth/demo-accounts"
+          }
         }
-      }
+      ]
     },
-    { "name": "Отправить заявку", "request": { "method": "POST", "url": "{{baseUrl}}/applications/{{appId}}/submit" } },
-    { "name": "Карточка заявки", "request": { "method": "GET", "url": "{{baseUrl}}/applications/{{appId}}" } },
-    { "name": "Принять предложение", "request": { "method": "POST", "url": "{{baseUrl}}/applications/{{appId}}/accept" } },
-    { "name": "Подписать документы", "request": { "method": "POST", "url": "{{baseUrl}}/applications/{{appId}}/sign" } },
-    { "name": "Отозвать заявку", "request": { "method": "POST", "url": "{{baseUrl}}/applications/{{appId}}/cancel" } },
     {
-      "name": "Решение андеррайтера",
-      "request": {
-        "method": "POST",
-        "url": "{{baseUrl}}/applications/{{appId}}/underwriter-decision",
-        "header": [{ "key": "Content-Type", "value": "application/json" }],
-        "body": { "mode": "raw", "raw": "{\n  \"status\": \"APPROVED\",\n  \"comment\": \"Залог подтверждён\"\n}" }
-      }
+      "name": "Каталог",
+      "item": [
+        {
+          "name": "Продукты",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/products"
+          }
+        },
+        {
+          "name": "Компании (банк)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/companies",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bankToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Клиент: одобрение и выдача",
+      "item": [
+        {
+          "name": "Создать заявку",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/applications",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{clientToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"product_code\": \"EXPRESS\",\n  \"amount\": 2000000,\n  \"term_months\": 24,\n  \"purpose\": \"Пополнение оборотных средств\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.collectionVariables.set('appId', pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Отправить заявку",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/applications/{{appId}}/submit",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{clientToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('approved', () => pm.expect(pm.response.json().status).to.eql('APPROVED'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Карточка заявки",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/applications/{{appId}}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{clientToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Принять предложение",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/applications/{{appId}}/accept",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{clientToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Подписать документы",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/applications/{{appId}}/sign",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{clientToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Мои заявки",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/applications",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{clientToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Ручной разбор",
+      "item": [
+        {
+          "name": "Создать крупную заявку",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/applications",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{clientToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"product_code\": \"INVEST\",\n  \"amount\": 15000000,\n  \"term_months\": 60,\n  \"purpose\": \"Покупка оборудования\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.collectionVariables.set('bigAppId', pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Отправить (→ UNDERWRITING)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/applications/{{bigAppId}}/submit",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{clientToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Очередь банка",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/applications?status=UNDERWRITING",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bankToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Решение: запросить уточнения",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/applications/{{bigAppId}}/underwriter-decision",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bankToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"INFO_REQUESTED\",\n  \"comment\": \"Уменьшите сумму до 9 млн ₽\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Клиент исправляет сумму",
+          "request": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/applications/{{bigAppId}}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{clientToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 9000000\n}"
+            }
+          }
+        },
+        {
+          "name": "Повторная отправка",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/applications/{{bigAppId}}/submit",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{clientToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Негативные",
+      "item": [
+        {
+          "name": "Без токена → 401",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/applications"
+          }
+        },
+        {
+          "name": "Клиент принимает решение → 403",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/applications/{{bigAppId}}/underwriter-decision",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{clientToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"APPROVED\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Подписать выданную → 409",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/applications/{{appId}}/sign",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{clientToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Отозвать заявку",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/applications/{{appId}}/cancel",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{clientToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        }
+      ]
     }
   ]
 }

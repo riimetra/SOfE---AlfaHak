@@ -22,3 +22,10 @@ dist/
 .idea/
 .vscode/
 .DS_Store
+
+# Build artifacts
+*.tsbuildinfo
+vite.config.ts.timestamp-*
+
+# Local SQLite
+*.db

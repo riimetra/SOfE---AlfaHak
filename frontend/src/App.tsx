@@ -1,50 +1,81 @@
 import { useEffect, useState } from "react";
-import { Link, Route, Routes } from "react-router-dom";
-import { api, Company } from "./api/client";
+import { Link, Navigate, NavLink, Route, Routes } from "react-router-dom";
+import { api, tokenStore, User } from "./api/client";
+import Spinner from "./components/Spinner";
+import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import NewApplication from "./pages/NewApplication";
 import ApplicationPage from "./pages/ApplicationPage";
 import BankQueue from "./pages/BankQueue";
+import UnderwriterCard from "./pages/UnderwriterCard";
 
 export default function App() {
-  const [companies, setCompanies] = useState<Company[]>([]);
-  const [companyId, setCompanyId] = useState<string>(
-    () => localStorage.getItem("companyId") ?? "",
-  );
+  const [user, setUser] = useState<User | null>(null);
+  const [checking, setChecking] = useState(true);
 
   useEffect(() => {
-    api.companies().then((list) => {
-      setCompanies(list);
-      if (!companyId && list.length) setCompanyId(list[0].id);
-    });
+    if (!tokenStore.get()) {
+      setChecking(false);
+      return;
+    }
+    api.me().then(setUser).catch(() => tokenStore.set(null)).finally(() => setChecking(false));
   }, []);
 
   useEffect(() => {
-    if (companyId) localStorage.setItem("companyId", companyId);
-  }, [companyId]);
+    const onLogout = () => setUser(null);
+    window.addEventListener("auth:logout", onLogout);
+    return () => window.removeEventListener("auth:logout", onLogout);
+  }, []);
+
+  function logout() {
+    tokenStore.set(null);
+    setUser(null);
+  }
+
+  if (checking) return <main><Spinner /></main>;
+  if (!user) return <Login onLogin={setUser} />;
+
+  const isBank = user.role === "underwriter";
 
   return (
     <div className="layout">
       <header>
-        <Link to="/" className="logo">Кредитный кабинет</Link>
+        <Link to="/" className="logo">
+          Кредитный кабинет{isBank && <span className="logo-tag">Банк</span>}
+        </Link>
         <nav>
-          <Link to="/">Мои заявки</Link>
-          <Link to="/new">Новая заявка</Link>
-          <Link to="/bank">Банк: очередь</Link>
+          {isBank ? (
+            <NavLink to="/" end>Очередь заявок</NavLink>
+          ) : (
+            <>
+              <NavLink to="/" end>Мои заявки</NavLink>
+              <NavLink to="/new">Получить кредит</NavLink>
+            </>
+          )}
         </nav>
-        {/* Демо-режим: вместо авторизации — выбор тестового клиента */}
-        <select value={companyId} onChange={(e) => setCompanyId(e.target.value)}>
-          {companies.map((c) => (
-            <option key={c.id} value={c.id}>{c.name}</option>
-          ))}
-        </select>
+        <div className="user">
+          <div>
+            <b>{user.full_name}</b>
+            <div className="muted small">{isBank ? user.position : user.company?.name}</div>
+          </div>
+          <button className="secondary" onClick={logout}>Выйти</button>
+        </div>
       </header>
       <main>
         <Routes>
-          <Route path="/" element={<Dashboard companyId={companyId} />} />
-          <Route path="/new" element={<NewApplication companyId={companyId} />} />
-          <Route path="/applications/:id" element={<ApplicationPage />} />
-          <Route path="/bank" element={<BankQueue />} />
+          {isBank ? (
+            <>
+              <Route path="/" element={<BankQueue />} />
+              <Route path="/bank/applications/:id" element={<UnderwriterCard />} />
+            </>
+          ) : (
+            <>
+              <Route path="/" element={<Dashboard user={user} />} />
+              <Route path="/new" element={<NewApplication user={user} />} />
+              <Route path="/applications/:id" element={<ApplicationPage />} />
+            </>
+          )}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
     </div>

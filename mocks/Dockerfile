@@ -11,6 +11,8 @@ COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-dev
 
 COPY app ./app
+# Файлы с хоста могут прийти с правами 600 — делаем их читаемыми для непривилегированного пользователя
+RUN chmod -R a+rX /app
 
 RUN useradd --create-home appuser
 USER appuser

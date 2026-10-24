@@ -3,15 +3,109 @@
   "info": {
     "title": "Умный кредитный кабинет — API",
     "description": "Цифровой кредитный конвейер для малого и микробизнеса",
-    "version": "0.1.0"
+    "version": "1.0.0"
   },
   "paths": {
+    "/api/v1/auth/login": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Login",
+        "operationId": "login_api_v1_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Me",
+        "operationId": "me_api_v1_auth_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/auth/demo-accounts": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Demo Accounts",
+        "description": "Тестовые учётные записи для экрана входа. Доступно только при DEMO_MODE=true.",
+        "operationId": "demo_accounts_api_v1_auth_demo_accounts_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/DemoAccount"
+                  },
+                  "type": "array",
+                  "title": "Response Demo Accounts Api V1 Auth Demo Accounts Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/products": {
       "get": {
         "tags": [
           "catalog"
         ],
         "summary": "List Products",
+        "description": "Каталог кредитных продуктов (публичный).",
         "operationId": "list_products_api_v1_products_get",
         "responses": {
           "200": {
@@ -37,7 +131,7 @@
           "companies"
         ],
         "summary": "List Companies",
-        "description": "Демо-список компаний (вместо авторизации — выбор тестового клиента).",
+        "description": "Клиенты банка — только для сотрудника банка.",
         "operationId": "list_companies_api_v1_companies_get",
         "responses": {
           "200": {
@@ -54,7 +148,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
       }
     },
     "/api/v1/companies/{company_id}": {
@@ -64,6 +163,11 @@
         ],
         "summary": "Get Company",
         "operationId": "get_company_api_v1_companies__company_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "company_id",
@@ -105,24 +209,14 @@
           "applications"
         ],
         "summary": "List Applications",
+        "description": "Клиент видит заявки своей компании, сотрудник банка — все (с фильтрами).",
         "operationId": "list_applications_api_v1_applications_get",
-        "parameters": [
+        "security": [
           {
-            "name": "company_id",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Company Id"
-            }
-          },
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
           {
             "name": "status",
             "in": "query",
@@ -137,6 +231,22 @@
                 }
               ],
               "title": "Status"
+            }
+          },
+          {
+            "name": "company_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Company Id"
             }
           }
         ],
@@ -173,6 +283,11 @@
         ],
         "summary": "Create Application",
         "operationId": "create_application_api_v1_applications_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -189,7 +304,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApplicationOut"
+                  "$ref": "#/components/schemas/ApplicationDetail"
                 }
               }
             }
@@ -212,8 +327,13 @@
         "tags": [
           "applications"
         ],
-        "summary": "Get Application",
-        "operationId": "get_application_api_v1_applications__app_id__get",
+        "summary": "Read Application",
+        "operationId": "read_application_api_v1_applications__app_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "app_id",
@@ -254,6 +374,11 @@
         ],
         "summary": "Update Application",
         "operationId": "update_application_api_v1_applications__app_id__patch",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "app_id",
@@ -281,7 +406,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApplicationOut"
+                  "$ref": "#/components/schemas/ApplicationDetail"
                 }
               }
             }
@@ -305,8 +430,13 @@
           "applications"
         ],
         "summary": "Submit Application",
-        "description": "Отправка заявки (из DRAFT) или повторная отправка после уточнений (из INFO_REQUESTED).",
+        "description": "Отправка (из DRAFT) или повторная отправка после уточнений (из INFO_REQUESTED).\n\nВесь конвейер выполняется в одной транзакции: при непредвиденной ошибке заявка\nостаётся в исходном статусе и её можно отправить снова.",
         "operationId": "submit_application_api_v1_applications__app_id__submit_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "app_id",
@@ -349,6 +479,11 @@
         ],
         "summary": "Accept Offer",
         "operationId": "accept_offer_api_v1_applications__app_id__accept_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "app_id",
@@ -366,7 +501,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApplicationOut"
+                  "$ref": "#/components/schemas/ApplicationDetail"
                 }
               }
             }
@@ -390,8 +525,13 @@
           "applications"
         ],
         "summary": "Sign Documents",
-        "description": "Симуляция подписания документов и выдачи средств.",
+        "description": "Симуляция подписания документов простой электронной подписью и выдачи средств.",
         "operationId": "sign_documents_api_v1_applications__app_id__sign_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "app_id",
@@ -409,7 +549,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApplicationOut"
+                  "$ref": "#/components/schemas/ApplicationDetail"
                 }
               }
             }
@@ -434,6 +574,11 @@
         ],
         "summary": "Cancel Application",
         "operationId": "cancel_application_api_v1_applications__app_id__cancel_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "app_id",
@@ -451,7 +596,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApplicationOut"
+                  "$ref": "#/components/schemas/ApplicationDetail"
                 }
               }
             }
@@ -478,6 +623,11 @@
         "summary": "Underwriter Decision",
         "description": "Решение андеррайтера по заявке в статусе UNDERWRITING.",
         "operationId": "underwriter_decision_api_v1_applications__app_id__underwriter_decision_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "app_id",
@@ -505,7 +655,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApplicationOut"
+                  "$ref": "#/components/schemas/ApplicationDetail"
                 }
               }
             }
@@ -547,10 +697,6 @@
     "schemas": {
       "ApplicationCreate": {
         "properties": {
-          "company_id": {
-            "type": "string",
-            "title": "Company Id"
-          },
           "product_code": {
             "type": "string",
             "title": "Product Code"
@@ -559,6 +705,7 @@
             "anyOf": [
               {
                 "type": "number",
+                "maximum": 1000000000.0,
                 "exclusiveMinimum": 0.0
               },
               {
@@ -569,17 +716,30 @@
           },
           "term_months": {
             "type": "integer",
+            "maximum": 360.0,
             "exclusiveMinimum": 0.0,
             "title": "Term Months"
           },
           "purpose": {
             "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
             "title": "Purpose"
+          },
+          "company_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Company Id"
           }
         },
         "type": "object",
         "required": [
-          "company_id",
           "product_code",
           "amount",
           "term_months",
@@ -597,9 +757,15 @@
             "type": "string",
             "title": "Company Id"
           },
+          "company": {
+            "$ref": "#/components/schemas/CompanyShort"
+          },
           "product_code": {
             "type": "string",
             "title": "Product Code"
+          },
+          "product": {
+            "$ref": "#/components/schemas/ProductShort"
           },
           "status": {
             "$ref": "#/components/schemas/ApplicationStatus"
@@ -664,7 +830,9 @@
         "required": [
           "id",
           "company_id",
+          "company",
           "product_code",
+          "product",
           "status",
           "amount",
           "term_months",
@@ -688,9 +856,15 @@
             "type": "string",
             "title": "Company Id"
           },
+          "company": {
+            "$ref": "#/components/schemas/CompanyShort"
+          },
           "product_code": {
             "type": "string",
             "title": "Product Code"
+          },
+          "product": {
+            "$ref": "#/components/schemas/ProductShort"
           },
           "status": {
             "$ref": "#/components/schemas/ApplicationStatus"
@@ -744,7 +918,9 @@
         "required": [
           "id",
           "company_id",
+          "company",
           "product_code",
+          "product",
           "status",
           "amount",
           "term_months",
@@ -782,6 +958,7 @@
             "anyOf": [
               {
                 "type": "number",
+                "maximum": 1000000000.0,
                 "exclusiveMinimum": 0.0
               },
               {
@@ -797,6 +974,7 @@
             "anyOf": [
               {
                 "type": "integer",
+                "maximum": 360.0,
                 "exclusiveMinimum": 0.0
               },
               {
@@ -808,7 +986,9 @@
           "purpose": {
             "anyOf": [
               {
-                "type": "string"
+                "type": "string",
+                "maxLength": 255,
+                "minLength": 1
               },
               {
                 "type": "null"
@@ -872,6 +1052,68 @@
         ],
         "title": "CompanyOut"
       },
+      "CompanyShort": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "inn": {
+            "type": "string",
+            "title": "Inn"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "inn",
+          "name"
+        ],
+        "title": "CompanyShort"
+      },
+      "DemoAccount": {
+        "properties": {
+          "login": {
+            "type": "string",
+            "title": "Login"
+          },
+          "password": {
+            "type": "string",
+            "title": "Password"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role"
+          },
+          "full_name": {
+            "type": "string",
+            "title": "Full Name"
+          },
+          "position": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Position"
+          }
+        },
+        "type": "object",
+        "required": [
+          "login",
+          "password",
+          "role",
+          "full_name"
+        ],
+        "title": "DemoAccount"
+      },
       "EventOut": {
         "properties": {
           "from_status": {
@@ -931,6 +1173,28 @@
         "type": "object",
         "title": "HTTPValidationError"
       },
+      "LoginRequest": {
+        "properties": {
+          "login": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1,
+            "title": "Login"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "login",
+          "password"
+        ],
+        "title": "LoginRequest"
+      },
       "ProductOut": {
         "properties": {
           "code": {
@@ -987,12 +1251,136 @@
         ],
         "title": "ProductOut"
       },
+      "ProductShort": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "name"
+        ],
+        "title": "ProductShort"
+      },
+      "TokenOut": {
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "title": "Access Token"
+          },
+          "token_type": {
+            "type": "string",
+            "title": "Token Type",
+            "default": "bearer"
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserOut"
+          }
+        },
+        "type": "object",
+        "required": [
+          "access_token",
+          "user"
+        ],
+        "title": "TokenOut"
+      },
       "UnderwriterDecision": {
         "properties": {
           "status": {
-            "$ref": "#/components/schemas/ApplicationStatus"
+            "type": "string",
+            "enum": [
+              "APPROVED",
+              "COUNTER_OFFER",
+              "REJECTED",
+              "INFO_REQUESTED"
+            ],
+            "title": "Status"
           },
           "comment": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comment"
+          },
+          "amount": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Amount"
+          },
+          "term_months": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Term Months"
+          },
+          "rate": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMaximum": 100.0,
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rate"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "title": "UnderwriterDecision",
+        "description": "Решение андеррайтера по заявке на ручном разборе."
+      },
+      "UserOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "login": {
+            "type": "string",
+            "title": "Login"
+          },
+          "full_name": {
+            "type": "string",
+            "title": "Full Name"
+          },
+          "position": {
             "anyOf": [
               {
                 "type": "string"
@@ -1001,14 +1389,37 @@
                 "type": "null"
               }
             ],
-            "title": "Comment"
+            "title": "Position"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "client",
+              "underwriter"
+            ],
+            "title": "Role"
+          },
+          "company": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CompanyOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "type": "object",
         "required": [
-          "status"
+          "id",
+          "login",
+          "full_name",
+          "position",
+          "role",
+          "company"
         ],
-        "title": "UnderwriterDecision"
+        "title": "UserOut"
       },
       "ValidationError": {
         "properties": {
@@ -1042,6 +1453,13 @@
           "type"
         ],
         "title": "ValidationError"
+      }
+    },
+    "securitySchemes": {
+      "HTTPBearer": {
+        "type": "http",
+        "description": "Токен из POST /api/v1/auth/login",
+        "scheme": "bearer"
       }
     }
   }
